@@ -103,6 +103,7 @@
 //Speed for autocalibration travel and probing moves
 #define AUTOCAL_TRAVELRATE 400 // mm/sec
 #define AUTOCAL_PROBERATE 8 // mm/sec
+#define AUTOCAL_PROBERATE 40 // mm/sec
 
 //Amount to lift head after probing a point
 #define AUTOCAL_PROBELIFT 2 // mm
