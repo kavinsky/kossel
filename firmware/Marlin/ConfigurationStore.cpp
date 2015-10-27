@@ -37,7 +37,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // the default values are used whenever there is a change to the data, to prevent
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
-#define EEPROM_VERSION "V14"
+#define EEPROM_VERSION "V15"
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings() 
@@ -63,6 +63,7 @@ void Config_StoreSettings()
     EEPROM_WRITE_VAR(i,max_pos);
     EEPROM_WRITE_VAR(i,endstop_adj);
     EEPROM_WRITE_VAR(i,tower_adj);
+    EEPROM_WRITE_VAR(i,diagrod_adj);
     EEPROM_WRITE_VAR(i,z_probe_offset);
   #endif
   #ifndef ULTIPANEL
@@ -155,38 +156,44 @@ void Config_PrintSettings()
     SERIAL_ECHOLN("");
     #ifdef DELTA
       SERIAL_ECHO_START;
-      SERIAL_ECHOLNPGM("Endstop adjustment (mm):");
+      SERIAL_ECHOLNPGM("Delta Geometry adjustment:");
       SERIAL_ECHO_START;
-      SERIAL_ECHOPAIR("  M666 X",endstop_adj[0]);
+      SERIAL_ECHO("  M666 A");
+      SERIAL_PROTOCOL_F(tower_adj[0],3);
+      SERIAL_ECHO(" B");
+      SERIAL_PROTOCOL_F(tower_adj[1],3);
+      SERIAL_ECHO(" C");
+      SERIAL_PROTOCOL_F(tower_adj[2],3);
+      SERIAL_ECHO(" I");
+      SERIAL_PROTOCOL_F(tower_adj[3],3);
+      SERIAL_ECHO(" J");
+      SERIAL_PROTOCOL_F(tower_adj[4],3);
+      SERIAL_ECHO(" K");
+      SERIAL_PROTOCOL_F(tower_adj[5],3);
+      SERIAL_ECHO(" U");
+      SERIAL_PROTOCOL_F(diagrod_adj[0],3);
+      SERIAL_ECHO(" V");
+      SERIAL_PROTOCOL_F(diagrod_adj[1],3);
+      SERIAL_ECHO(" W");
+      SERIAL_PROTOCOL_F(diagrod_adj[2],3);
+      SERIAL_ECHOPAIR(" R" ,delta_radius);
+      SERIAL_ECHOPAIR(" D" ,delta_diagonal_rod);
+      SERIAL_ECHOPAIR(" H" ,max_pos[2]);
+      SERIAL_ECHOLN("");
+      SERIAL_ECHO_START;
+      SERIAL_ECHOLNPGM("Endstop Offsets:");
+      SERIAL_ECHO_START;
+      SERIAL_ECHOPAIR("  M666 X" ,endstop_adj[0]);
       SERIAL_ECHOPAIR(" Y" ,endstop_adj[1]);
       SERIAL_ECHOPAIR(" Z" ,endstop_adj[2]);
       SERIAL_ECHOLN("");
       SERIAL_ECHO_START;
-      SERIAL_ECHOLNPGM("Delta Geometry adjustment:");
+      SERIAL_ECHOLNPGM("Z-Probe Offset:");
       SERIAL_ECHO_START;
-      SERIAL_ECHOPAIR("  M666 A",tower_adj[0]);
-      SERIAL_ECHOPAIR(" B" ,tower_adj[1]);
-      SERIAL_ECHOPAIR(" C" ,tower_adj[2]);
-      SERIAL_ECHOPAIR(" E" ,tower_adj[3]);
-      SERIAL_ECHOPAIR(" F" ,tower_adj[4]);
-      SERIAL_ECHOPAIR(" G" ,tower_adj[5]);
-      SERIAL_ECHOPAIR(" R" ,delta_radius);
-      SERIAL_ECHOPAIR(" D" ,delta_diagonal_rod);
-      SERIAL_ECHOPAIR(" H" ,max_pos[2]);
-      SERIAL_ECHOPAIR(" P" ,z_probe_offset[3]);
+      SERIAL_ECHOPAIR("  M666 P X" ,z_probe_offset[0]);
+      SERIAL_ECHOPAIR(" Y" ,z_probe_offset[1]);
+      SERIAL_ECHOPAIR(" Z" ,z_probe_offset[2]);
       SERIAL_ECHOLN("");
-/*
-      SERIAL_ECHOLN("Tower Positions");
-      SERIAL_ECHOPAIR("Tower1 X:",delta_tower1_x);
-      SERIAL_ECHOPAIR(" Y:",delta_tower1_y);
-      SERIAL_ECHOLN("");
-      SERIAL_ECHOPAIR("Tower2 X:",delta_tower2_x);
-      SERIAL_ECHOPAIR(" Y:",delta_tower2_y);
-      SERIAL_ECHOLN("");
-      SERIAL_ECHOPAIR("Tower3 X:",delta_tower3_x);
-      SERIAL_ECHOPAIR(" Y:",delta_tower3_y);
-      SERIAL_ECHOLN("");
-*/
     #endif
  #ifdef PIDTEMP
     SERIAL_ECHO_START;
@@ -234,6 +241,7 @@ void Config_RetrieveSettings()
           EEPROM_READ_VAR(i,max_pos);
           EEPROM_READ_VAR(i,endstop_adj);
           EEPROM_READ_VAR(i,tower_adj);
+          EEPROM_READ_VAR(i,diagrod_adj);
           EEPROM_READ_VAR(i,z_probe_offset);
           // Update delta constants for updated delta_radius & tower_adj values
           set_delta_constants();
@@ -300,8 +308,18 @@ void Config_ResetDefault()
     #ifdef DELTA
       delta_radius = DEFAULT_DELTA_RADIUS;
       delta_diagonal_rod = DEFAULT_DELTA_DIAGONAL_ROD;
-      endstop_adj[0] = endstop_adj[1] = endstop_adj[2] = 0;
-      tower_adj[0] = tower_adj[1] = tower_adj[2] = tower_adj[3] = tower_adj[4] = tower_adj[5] = 0;
+      endstop_adj[0] = TOWER_A_ENDSTOP_ADJ;
+      endstop_adj[1] = TOWER_B_ENDSTOP_ADJ;
+      endstop_adj[2] = TOWER_C_ENDSTOP_ADJ;
+      tower_adj[0] = TOWER_A_POSITION_ADJ;
+      tower_adj[1] = TOWER_B_POSITION_ADJ;
+      tower_adj[2] = TOWER_C_POSITION_ADJ;
+      tower_adj[3] = TOWER_A_RADIUS_ADJ;
+      tower_adj[4] = TOWER_B_RADIUS_ADJ;
+      tower_adj[5] = TOWER_C_RADIUS_ADJ;
+      diagrod_adj[0] = TOWER_A_DIAGROD_ADJ;
+      diagrod_adj[1] = TOWER_B_DIAGROD_ADJ;
+      diagrod_adj[2] = TOWER_C_DIAGROD_ADJ;
       max_pos[2] = MANUAL_Z_HOME_POS;
       set_default_z_probe_offset();
       set_delta_constants();
