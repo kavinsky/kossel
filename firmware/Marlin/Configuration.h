@@ -101,15 +101,14 @@
 #define DEBUG_MESSAGES
 
 //Speed for autocalibration travel and probing moves
-#define AUTOCAL_TRAVELRATE 400 // mm/sec
-#define AUTOCAL_PROBERATE 8 // mm/sec
+#define AUTOCAL_TRAVELRATE 150 // mm/sec
 #define AUTOCAL_PROBERATE 40 // mm/sec
 
 //Amount to lift head after probing a point
 #define AUTOCAL_PROBELIFT 2 // mm
 
 // Precision for G30 delta autocalibration function (calibrate to within +/- this value)
-#define AUTOCALIBRATION_PRECISION 0.04// mm
+#define AUTOCALIBRATION_PRECISION 0.07// mm
 
 // Diameter of print bed - this is used to set the distance that autocalibration probes the bed at.
 #define BED_DIAMETER 160 // mm
